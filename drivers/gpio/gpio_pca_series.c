@@ -685,8 +685,8 @@ sw_rst:
 	 * Reset pin not connected, write reset value to registers
 	 * No need to check return, as unsupported reg will return early with error
 	 */
-	gpio_pca_series_reg_write(dev, PCA_REG_TYPE_1B_OUTPUT_PORT, reset_value_1);
 	gpio_pca_series_reg_write(dev, PCA_REG_TYPE_1B_CONFIGURATION, reset_value_1);
+	gpio_pca_series_reg_write(dev, PCA_REG_TYPE_1B_OUTPUT_PORT, reset_value_1);
 	if (cfg->part_cfg->flags & PCA_HAS_LATCH) {
 		gpio_pca_series_reg_write(dev, PCA_REG_TYPE_2B_OUTPUT_DRIVE_STRENGTH,
 			reset_value_1);
