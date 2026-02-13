@@ -1,0 +1,9 @@
+# Heltec WiFi LoRa 32 (V4) board configuration
+#
+# SPDX-FileCopyrightText: Copyright The Zephyr Project Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_HELTEC_WIFI_LORA32_V4
+	select SOC_ESP32S3_R2
+	select SOC_ESP32S3_PROCPU if BOARD_HELTEC_WIFI_LORA32_V4_ESP32S3_PROCPU
+	select SOC_ESP32S3_APPCPU if BOARD_HELTEC_WIFI_LORA32_V4_ESP32S3_APPCPU

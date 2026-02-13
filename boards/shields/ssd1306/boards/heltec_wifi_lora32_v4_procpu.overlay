@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2025
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* Heltec WiFi LoRa32 V4 specific modifications for ssd1306_128x64 shield */
+
+&ssd1306_ssd1306_128x64 {
+	supply-gpios = <&gpio0 36 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&gpio0 21 GPIO_ACTIVE_LOW>;
+	ready-time-ms = <100>;
+	inversion-on;
+};
