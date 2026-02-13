@@ -472,6 +472,7 @@ Bluetooth Audio:
     - tests/bsim/bluetooth/audio_samples/
     - tests/bsim/bluetooth/tester/src/audio/
     - tests/bluetooth/shell/audio.conf
+    - tests/bluetooth/shell/usb_audio.overlay
     - tests/bluetooth/tester/overlay-le-audio.conf
     - tests/bluetooth/tester/overlay-bt_ll_sw_split.conf
     - tests/bluetooth/tester/src/audio/
@@ -631,6 +632,7 @@ Bluetooth Host:
     - tests/bluetooth/qualification/
     - tests/bluetooth/shell/audio.conf
     - tests/bluetooth/shell/mesh.conf
+    - tests/bluetooth/shell/usb_audio.overlay
     - tests/bluetooth/tester/
     - tests/bsim/bluetooth/audio/
     - tests/bsim/bluetooth/audio_samples/
@@ -903,6 +905,8 @@ CPU Frequency Scaling:
   maintainers:
     - peter-mitsis
     - seankyer
+  collaborators:
+    - ZhaoxiangJin
   files:
     - include/zephyr/cpu_freq/
     - subsys/cpu_freq/
@@ -1171,7 +1175,6 @@ Disk:
     - danieldegrasse
   collaborators:
     - jfischer-no
-    - decsny
   files:
     - include/zephyr/storage/disk_access.h
     - include/zephyr/drivers/disk.h
@@ -1185,6 +1188,12 @@ Disk:
     - dts/bindings/sd/
     - dts/bindings/mmc/
     - dts/bindings/disk/
+  file-groups:
+    - name: eMMC
+      collaborators:
+        - decsny
+      files-regex:
+        - ^(?!.*sdmmc).*mmc
   labels:
     - "area: Disk Access"
   tests:
@@ -1537,6 +1546,7 @@ Documentation Infrastructure:
     - iuliana-prodan
     - dbaluta
     - abonislawski
+    - serhiy-katsyuba-intel
   files:
     - drivers/dai/
     - doc/hardware/peripherals/audio/dai.rst
@@ -1776,7 +1786,6 @@ Documentation Infrastructure:
   maintainers:
     - bjarki-andreasen
   collaborators:
-    - tomi-font
     - fabiobaltieri
     - ubieda
   files:
@@ -2340,6 +2349,8 @@ Documentation Infrastructure:
     - dts/bindings/reset/
     - include/zephyr/dt-bindings/reset/
     - tests/drivers/reset/
+  labels:
+    - "area: Reset"
 
 "Drivers: Retained Memory":
   status: maintained
@@ -2482,7 +2493,6 @@ Documentation Infrastructure:
   collaborators:
     - bjarki-andreasen
     - dipakgmx
-    - fabiobaltieri
     - faxe1008
     - jbehrensnx
   files:
@@ -3086,6 +3096,7 @@ Intel Platforms (Xtensa):
     - marcinszkudlinski
     - nashif
     - abonislawski
+    - serhiy-katsyuba-intel
   files:
     - boards/intel/adsp/
     - soc/intel/intel_adsp/
@@ -3094,6 +3105,8 @@ Intel Platforms (Xtensa):
     - samples/boards/intel/adsp/
     - dts/bindings/*/intel,adsp*
     - scripts/west_commands/runners/intel_adsp.py
+    - drivers/counter/counter_ace_v1x*
+    - drivers/counter/Kconfig.ace
   labels:
     - "platform: Intel ADSP"
 
@@ -3183,6 +3196,24 @@ Kernel:
     - "area: Kernel"
   tests:
     - kernel
+
+Key-Value Storage Systems:
+  status: maintained
+  maintainers:
+    - rghaddab
+  collaborators:
+    - Laczen
+    - nashif
+    - LingaoM
+  files:
+    - include/zephyr/kvss/
+    - samples/subsys/kvss/
+    - subsys/kvss/
+    - tests/subsys/kvss/
+  labels:
+    - "area: Key-Value Storage Systems"
+  tests:
+    - keyvalstorage
 
 "Linkable Loadable Extensions":
   status: maintained
@@ -3451,6 +3482,10 @@ Microchip SAM Platforms:
     - nandojve
   collaborators:
     - ArunMCHP
+    - fabin-mchp
+    - Farsin-Nasar-Microchip
+    - mchp-asif
+    - sunil-abraham
     - stephanosio
   files:
     - boards/atmel/
@@ -3607,6 +3642,7 @@ NXP Platform Wireless:
       collaborators:
         - MaochenWang1
       files:
+        - boards/shields/nxp_m2_wifi_bt/
         - drivers/wifi/
         - samples/net/
     - name: NXP IEEE802.15.4
@@ -3726,6 +3762,45 @@ NXP Platforms (MCU):
         - boards/nxp/vmu*/
         - boards/nxp/rddrone_fmuk66/
         - tests/boards/vmu_rt1170/
+    - name: NXP Camera Shields
+      collaborators:
+        - ngphibang
+      files:
+        - boards/shields/nxp_btb44_ov5640/
+    - name: NXP Display Shields
+      collaborators:
+        - KATE-WANG-NXP
+      files:
+        - boards/shields/g1120b0mipi/
+        - boards/shields/lcd_par_s035/
+        - boards/shields/rk043fn02h_ct/
+        - boards/shields/rk043fn66hs_ctg/
+        - boards/shields/rk055hdmipi4m
+        - boards/shields/rk055hdmipi4ma0/
+        - boards/shields/zc143ac72mipi/
+    - name: NXP I3C Test Shields
+      collaborators:
+        - hakehuang
+      files:
+        - boards/shields/p3t1755dp_ard_i2c/
+        - boards/shields/p3t1755dp_ard_i3c/
+    - name: NXP MCU LPC11U6x
+      collaborators:
+        - simonguinot
+        - mbittan
+      files:
+        - boards/nxp/lpcxpresso11u68/
+        - soc/nxp/lpc/lpc11u6x/
+      files-regex:
+        - .*lpc11u6.*
+    - name: NXP MCU KE1xF
+      collaborators:
+        - henrikbrixandersen
+      files:
+        - boards/nxp/twr_ke18f/
+        - soc/nxp/kinetis/ke1xf/
+      files-regex:
+        - .*ke1*f.*
     - name: NXP MCU k32l
       collaborators:
         - iia
@@ -4384,13 +4459,13 @@ RISCV arch:
     - kgugala
     - tgorochowik
   collaborators:
-    - mgielda
-    - katsuster
     - edersondisouza
-    - npitre
-    - ycsin
-    - VynDragon
+    - katsuster
     - masz-nordic
+    - mgielda
+    - npitre
+    - VynDragon
+    - ycsin
   files:
     - arch/riscv/
     - boards/enjoydigital/litex_vexriscv/
@@ -4399,16 +4474,17 @@ RISCV arch:
     - boards/sifive/
     - boards/sparkfun/red_v_things_plus/
     - boards/starfive/
+    - doc/hardware/arch/risc-v.rst
+    - drivers/interrupt_controller/intc_plic.c
+    - drivers/interrupt_controller/intc_riscv_imsic.c
     - dts/bindings/riscv/
     - dts/riscv/
     - include/zephyr/arch/riscv/
     - soc/common/riscv-privileged/
+    - soc/qemu/virt_riscv/
     - soc/sifive/
     - soc/starfive/
-    - soc/qemu/virt_riscv/
     - tests/arch/riscv/
-    - doc/hardware/arch/risc-v.rst
-    - drivers/interrupt_controller/intc_plic.c
   labels:
     - "area: RISCV"
   tests:
@@ -4870,6 +4946,15 @@ Settings:
         - subsys/settings/include/settings/settings_zms.h
         - tests/subsys/settings/zms/
         - tests/subsys/settings/functional/zms/
+    - name: NVS backend
+      collaborators:
+        - Laczen
+        - LingaoM
+      files:
+        - subsys/settings/src/settings_nvs.c
+        - subsys/settings/include/settings/settings_nvs.h
+        - tests/subsys/settings/nvs/
+        - tests/subsys/settings/functional/nvs/
   labels:
     - "area: Settings"
   tests:
@@ -5029,10 +5114,10 @@ Storage ZMS:
   maintainers:
     - rghaddab
   files:
-    - subsys/fs/zms/
-    - include/zephyr/fs/zms.h
-    - samples/subsys/fs/zms/
-    - tests/subsys/fs/zms/
+    - subsys/kvss/zms/
+    - include/zephyr/kvss/zms.h
+    - samples/subsys/kvss/zms/
+    - tests/subsys/kvss/zms/
     - doc/services/storage/zms/zms.rst
 
 Synopsys Platforms:
@@ -5095,11 +5180,15 @@ TI K3 Platforms:
     - gramsay0
     - dnltz
     - vaishnavachath
+    - natto1784
+    - Kronosblaster
   files:
     - boards/ti/*am62*/
     - drivers/*/*davinci*
     - drivers/*/*omap*
     - drivers/*/*ti_k3*
+    - drivers/*/*tisci*
+    - drivers/*/*secproxy*
     - dts/arm/ti/am6*
     - dts/arm/ti/j7*
     - dts/bindings/*/ti,k3*

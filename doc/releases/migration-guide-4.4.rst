@@ -221,6 +221,10 @@ Controller Area Network (CAN)
   selects between the named input clocks ``clksrc0`` and ``clksrc1`` for use as the CAN protocol
   engine clock.
 
+* Renamed the NXP LPC family MCAN driver Kconfig option ``CONFIG_CAN_MCUX_MCAN`` to
+  :kconfig:option:`CONFIG_CAN_NXP_LPC_MCAN` as this driver is not based on the NXP MCUXpresso HAL
+  (:github:`103679`).
+
 Counter
 =======
 
@@ -502,6 +506,12 @@ File System
   :dtcompatible:`zephyr,fstab,fatfs` with the ``automount`` property are present in the devicetree.
   Applications that do not want this behavior need to explicitly disable this option.
 
+* NVS and ZMS have been moved to the new Key-Value Storage Systems (KVSS) subsystem; the move
+  affects NVS and ZMS interface header paths which have been moved from
+  ``zephyr/fs/`` to ``zephyr/kvss/``.
+  Kconfig options for NVS and ZMS have been moved from underneath "File Systems" menu to
+  "Key-Value Storage Systems" menu, no Kconfigs have been affected.
+
 GPIO
 ====
 
@@ -565,6 +575,16 @@ Infineon
 
   * ``CONFIG_*_INFINEON_CAT1`` → ``CONFIG_*_INFINEON``
   * ``compatible: "infineon,cat1-adc"`` → ``compatible: "infineon,adc"``
+
+* Infineon Bluetooth HCI UART driver (:kconfig:option:`CONFIG_BT_HCI_UART_INFINEON`) with
+  compatible :dtcompatible:`infineon,bt-hci-uart` is now explicitly scoped to AIROC connectivity
+  chips that use HCI UART transport.
+  (:github:`103871`)
+
+  Corresponding Kconfig symbols and devicetree compatibles have also been updated:
+
+  * ``CONFIG_BT_CYW43XX`` → :kconfig:option:` CONFIG_BT_HCI_UART_INFINEON`
+  * ``dtcompatible: "infineon,cyw43xxx-bt-hci"`` → ``dtcompatible: "infineon,bt-hci-uart"``
 
 MDIO
 ====
@@ -780,6 +800,27 @@ Video
 
 * The :dtcompatible:`ovti,ov2640` reset pin handling has been corrected, resulting in an inverted
   active level compared to before, to match the active level expected by the sensor.
+
+Watchdog
+========
+
+  * The semantics of :kconfig:option:`CONFIG_WDT_DISABLE_AT_BOOT` have been clarified: the expected
+    behavior when ``CONFIG_WDT_DISABLE_AT_BOOT=n``, which was unclear and implemented inconsistently
+    across drivers, is now explicitly documented in :kconfig:option:`CONFIG_WDT_DISABLE_AT_BOOT`'s
+    description (refer to it for more details).
+
+    All in-tree watchdog drivers have been updated to follow the now documented semantics.
+
+    Notably, ``CONFIG_WDT_DISABLE_AT_BOOT=n`` can no longer be used to have watchdog(s) enabled at
+    boot "*automatically*". Users which relied on this behavior must update their application to
+    explicitly configure a watchdog, as done in the :zephyr:code-sample:`watchdog`. The following
+    Kconfig options related to this incorrect usage have been removed:
+
+      * ``CONFIG_IWDG_STM32_INITIAL_TIMEOUT``
+      * ``CONFIG_WDT_RPI_PICO_INITIAL_TIMEOUT``
+      * ``CONFIG_WDT_CC13XX_CC26XX_INITIAL_TIMEOUT``
+      * ``CONFIG_WDT_CC23X0_INITIAL_TIMEOUT``
+      * ``CONFIG_WDT_CC32XX_INITIAL_TIMEOUT``
 
 .. zephyr-keep-sorted-stop
 
