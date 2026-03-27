@@ -346,20 +346,6 @@ static void uart_sam0_rx_timeout(struct k_work *work)
 	dev_data->rx_waiting_for_irq = true;
 	regs->INTENSET.reg = SERCOM_USART_INTENSET_RXC;
 
-	/*
-	 * Never do a notify on a timeout started from the ISR: timing
-	 * granularity means the first timeout can be in the middle
-	 * of reception but still have the total elapsed time exhausted.
-	 * So we require a timeout chunk with no data seen at all
-	 * (i.e. no ISR entry).
-	 */
-	if (dev_data->rx_timeout_from_isr) {
-		dev_data->rx_timeout_from_isr = false;
-		k_work_reschedule(&dev_data->rx_timeout_work,
-				      K_USEC(dev_data->rx_timeout_chunk));
-		irq_unlock(key);
-		return;
-	}
 
 	uint32_t now = USEC_PER_MSEC * k_uptime_get_32();
 	uint32_t elapsed = now - dev_data->rx_timeout_start;
@@ -747,6 +733,9 @@ static void uart_sam0_isr(const struct device *dev)
 		dev_data->rx_waiting_for_irq = false;
 		regs->INTENCLR.reg = SERCOM_USART_INTENCLR_RXC;
 
+
+		/* DMA will read the currently ready byte out */
+		dma_start(cfg->dma_dev, cfg->rx_dma_channel);
 		/* Receive started, so request the next buffer */
 		if (dev_data->rx_next_len == 0U && dev_data->async_cb) {
 			struct uart_event evt = {
@@ -766,9 +755,6 @@ static void uart_sam0_isr(const struct device *dev)
 			k_work_reschedule(&dev_data->rx_timeout_work,
 					      K_USEC(dev_data->rx_timeout_chunk));
 		}
-
-		/* DMA will read the currently ready byte out */
-		dma_start(cfg->dma_dev, cfg->rx_dma_channel);
 	}
 #endif
 }
