@@ -9,7 +9,7 @@
 #include <string.h>
 #include <zephyr/sys/byteorder.h>
 #if defined(CONFIG_BOARD_QEMU_CORTEX_M0) || \
-	(defined(CONFIG_NRF_PLATFORM_HALTIUM) && \
+	((defined(CONFIG_SOC_SERIES_NRF54H) || defined(CONFIG_SOC_SERIES_NRF92)) && \
 	 defined(CONFIG_RISCV_CORE_NORDIC_VPR))
 #define RESET_CAUSE_AVAILABLE 0
 #else
@@ -87,7 +87,8 @@ ssize_t z_impl_hwinfo_get_device_id(uint8_t *buffer, size_t length)
 #if NRF_POWER_HAS_RESETREAS
 #define REASON_WATCHDOG NRFX_RESET_REASON_DOG_MASK
 #else
-#define REASON_WATCHDOG	(NRFX_RESET_REASON_DOG0_MASK | NRFX_RESET_REASON_DOG1_MASK)
+#define REASON_WATCHDOG	(NRFX_RESET_REASON_DOG0_MASK | \
+		COND_CODE_1(NRFX_RESET_REASON_HAS_DOG1, (NRFX_RESET_REASON_DOG1_MASK), (0)))
 #endif /* NRF_POWER_HAS_RESETREAS */
 
 #endif /* NRF_RESETINFO */

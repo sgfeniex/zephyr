@@ -9,6 +9,7 @@
 #include "openthread/platform/udp.h"
 #include "openthread_border_router.h"
 #include "sockets_internal.h"
+#include <assert.h>
 #include <common/code_utils.hpp>
 #include <errno.h>
 #include <openthread.h>
@@ -225,10 +226,12 @@ otError otPlatUdpConnect(otUdpSocket *aUdpSocket)
 		memcpy(&addr.sin6_addr, &aUdpSocket->mPeerName.mAddress, sizeof(otIp6Address));
 		addr.sin6_port = net_htons(aUdpSocket->mPeerName.mPort);
 
-		VerifyOrExit(zsock_connect(sock, (struct net_sockaddr *)&addr, sizeof(addr)) == 0,
-			     error = OT_ERROR_FAILED);
+	} else {
+		addr.sin6_family = NET_AF_UNSPEC;
 	}
 
+	VerifyOrExit(zsock_connect(sock, (struct net_sockaddr *)&addr, sizeof(addr)) == 0,
+		     error = OT_ERROR_FAILED);
 exit:
 	return error;
 }
